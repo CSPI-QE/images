@@ -4,6 +4,8 @@ name: Create and publish a container image
 on:
   push:
     branches: ['main']
+    
+  workflow_dispatch:
 
 env:
   REGISTRY: quay.io
