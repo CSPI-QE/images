@@ -1,3 +1,6 @@
 FROM quay.io/openshift/origin-cli 
 
-RUN dnf -y update && dnf -y install jq
+RUN rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm \
+    && yum -y install jq \
+    && yum clean all \
+    && rm -rf /var/cache/yum

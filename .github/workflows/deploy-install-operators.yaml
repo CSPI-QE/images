@@ -1,5 +1,5 @@
 ---
-name: Create and publish a container image
+name: Deploy install-operators Image
 
 on:
   push:
@@ -9,10 +9,10 @@ on:
 
 env:
   REGISTRY: quay.io
-  IMAGE_NAME: ${{ github.repository }}
-
+  ORG: cspi-qe-images
+  QUAY_SERVICE_ACCOUNT_USER: cspi-qe-images+github
 jobs:
-  deploy-install-operators:
+  deploy-image:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -23,23 +23,23 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Log in to the Container registry
-        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        uses: docker/login-action@v2
         with:
           registry: ${{ env.REGISTRY }}
-          username: rh_ee_caevans
+          username: ${{ env.QUAY_SERVICE_ACCOUNT_USER }}
           password: ${{ secrets.CR_PAT }}
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
-        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+        uses: docker/metadata-action@v4
         with:
-          images: ${{ env.REGISTRY }}/ocp-ci-install-operators
+          images: ${{ env.REGISTRY }}/${{ env.ORG }}/ocp-ci-install-operators
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        uses: docker/build-push-action@v4
         with:
           context: .
-          path: install-operators/Dockerfile
+          file: ./install-operators/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
