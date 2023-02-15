@@ -9,6 +9,9 @@ env:
   REGISTRY: quay.io
   ORG: cspi-qe-images
   QUAY_SERVICE_ACCOUNT_USER: cspi-qe-images+github
+  IMAGE_NAME: ocp-ci-install-operators
+  DOCKERFILE_PATH: ./install-operators/Dockerfile
+
 jobs:
   deploy-image:
     runs-on: ubuntu-latest
@@ -31,13 +34,13 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: ${{ env.REGISTRY }}/${{ env.ORG }}/ocp-ci-install-operators
+          images: ${{ env.REGISTRY }}/${{ env.ORG }}/${{ env.IMAGE_NAME }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
           context: .
-          file: ./install-operators/Dockerfile
+          file: ${{ env.DOCKERFILE_PATH }}
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
